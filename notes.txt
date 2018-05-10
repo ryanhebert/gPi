@@ -1,0 +1,15 @@
+Crontab Example
+https://code.tutsplus.com/tutorials/managing-cron-jobs-using-python--cms-28231
+
+how to structure python projects
+http://docs.python-guide.org/en/latest/writing/structure/
+
+homebridge docker config
+https://github.com/oznu/docker-homebridge/wiki/Homebridge-on-Raspberry-Pi
+
+
+configure screen
+https://www.abelectronics.co.uk/kb/article/1/i2c--smbus-and-raspbian-linux
+
+using git with github
+https://www.howtoforge.com/tutorial/install-git-and-github-on-ubuntu-14.04/
