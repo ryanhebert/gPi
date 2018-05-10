@@ -13,3 +13,11 @@ https://www.abelectronics.co.uk/kb/article/1/i2c--smbus-and-raspbian-linux
 
 using git with github
 https://www.howtoforge.com/tutorial/install-git-and-github-on-ubuntu-14.04/
+
+restful apis with python and flask
+https://auth0.com/blog/developing-restful-apis-with-python-and-flask/
+https://blog.miguelgrinberg.com/post/restful-authentication-with-flask
+https://flask-restful.readthedocs.io/en/latest/installation.html
+
+use gunicorn for flask
+https://stackoverflow.com/questions/41940663/why-cant-i-change-the-host-and-port-that-my-flask-app-runs-on

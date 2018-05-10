@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 from crontab import CronTab
 
 #### __init__
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
 ####
 
@@ -17,12 +17,22 @@ class h2oController:
 		self.defaultDuration = 1
 		self.abort = False
 
-		pins = [11, 12, 13, 14]
-		GPIO.setup(pins, GPIO.OUT)
+		pins = [18,16,22,15,11,13,21,19]
+		GPIO.setup(pins, GPIO.OUT, initial=GPIO.HIGH)
 
 		for i, pin in enumerate(pins):
 			if i < zoneCount:
 				self.zones.append(h2oZone(i+1,pin))
+
+		## Test
+		#for i, pin in enumerate(pins):
+		#	GPIO.output(pin, GPIO.HIGH)
+		#	time.sleep(1)
+
+		#for i, pin in enumerate(pins):
+		#	GPIO.output(pin, GPIO.LOW)
+		#	time.sleep(1)
+
 
 
 	def create_schedule(self, scheduledZones, name="default"):
@@ -33,9 +43,9 @@ class h2oController:
 
 	def stopZones(self):
 		for zone in self.zones:
-			GPIO.output(zone.pin, GPIO.LOW)
+			GPIO.output(zone.pin, GPIO.HIGH)
 
-			if GPIO.input(zone.pin):
+			if not GPIO.input(zone.pin):
 				return False
 		return True
 
@@ -45,8 +55,8 @@ class h2oController:
 		if zone in self.zones:
 			if self.stopZones():
 				startTime = time.time()
-				print("starting zone")
-				GPIO.output(zone.pin, GPIO.HIGH)
+				print("starting zone " + str(zone.pin))
+				GPIO.output(zone.pin, GPIO.LOW)
 				while True:
 					now = time.time()
 					timer = duration * 60 - int(now - startTime)
@@ -58,6 +68,7 @@ class h2oController:
 					elif  timer > 0:
 						time.sleep(1)
 					else:
+						GPIO.output(zone.pin, GPIO.HIGH)
 						print("zone finished")
 						break
 				return True
@@ -118,5 +129,3 @@ class h2oSchedule: ## need to finish
 
 	def forget(self):
 		self.cron.delete()
-
-
