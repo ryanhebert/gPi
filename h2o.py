@@ -14,8 +14,9 @@ class h2oController:
 		self.zoneCount = zoneCount
 		self.zones = []
 		self.schedules = []
-		self.defaultDuration = 1
-		self.abort = False
+		self.defaultDuration = 10
+		self.abortZone = True
+		self.abortSimpleMode = True
 
 		pins = [18,16,22,15,11,13,21,19]
 		GPIO.setup(pins, GPIO.OUT, initial=GPIO.HIGH)
@@ -23,16 +24,6 @@ class h2oController:
 		for i, pin in enumerate(pins):
 			if i < zoneCount:
 				self.zones.append(h2oZone(i+1,pin))
-
-		## Test
-		#for i, pin in enumerate(pins):
-		#	GPIO.output(pin, GPIO.HIGH)
-		#	time.sleep(1)
-
-		#for i, pin in enumerate(pins):
-		#	GPIO.output(pin, GPIO.LOW)
-		#	time.sleep(1)
-
 
 
 	def create_schedule(self, scheduledZones, name="default"):
@@ -42,6 +33,23 @@ class h2oController:
 
 
 	def stopZones(self):
+
+		self.abortZone = True
+		self.abortSimpleMode = True
+		time.sleep(1)
+
+		for zone in self.zones:
+			GPIO.output(zone.pin, GPIO.HIGH)
+
+			if not GPIO.input(zone.pin):
+				return False
+		return True
+
+	def stopZone(self):
+		self.abortZone = True
+		self.abortSimpleMode = False
+		time.sleep(1)
+
 		for zone in self.zones:
 			GPIO.output(zone.pin, GPIO.HIGH)
 
@@ -54,15 +62,17 @@ class h2oController:
 
 		if zone in self.zones:
 			if self.stopZones():
+				self.abortZone = False
+				self.abortSimpleMode = False
 				startTime = time.time()
 				print("starting zone " + str(zone.pin))
 				GPIO.output(zone.pin, GPIO.LOW)
 				while True:
 					now = time.time()
-					timer = duration * 60 - int(now - startTime)
+					timer = duration - int(now - startTime)
 					print ("%02d" % (timer/60/60) + ":" + "%02d" % (timer/60) + ":" + "%02d" % (timer%60))
-					if self.abort == True:
-						self.abort = False
+					if self.abortZone:
+						self.abortZone = False
 						print("zone aborted")
 						break
 					elif  timer > 0:
@@ -87,6 +97,24 @@ class h2oController:
 			#print item['zone']
 			#print item['duration']
 			self.startZone(item['zone'], item['duration'])
+
+	def simpleMode(self):
+
+		self.abortSimpleMode = False
+
+		for zone in self.zones:
+			if self.abortSimpleMode:
+				print("SimpleMode aborted")
+				return False
+			else:
+				self.startZone(zone,30)
+		return True
+
+	def getRunning(self):
+		for zone in self.zones:
+			if not GPIO.input(zone.pin):
+				return True
+		return False
 
 
 
